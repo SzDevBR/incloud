@@ -9,10 +9,17 @@ const path = require('path');
 
 const app = express();
 
-// Configurações do Discord OAuth
-const clientId = 'SEU_CLIENT_ID';
-const clientSecret = 'SEU_CLIENT_SECRET';
-const redirectUri = 'http://localhost:3000/callback';
+require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
+
+// ...
+
+const clientId = process.env.DISCORD_CLIENT_ID; // Substitua pelo nome da variável do token do cliente do Discord no .env
+const clientSecret = process.env.DISCORD_CLIENT_SECRET; // Substitua pelo nome da variável do segredo do cliente do Discord no .env
+const redirectUri = process.env.DISCORD_REDIRECT_URI; // Substitua pelo nome da variável da URL de redirecionamento do Discord no .env
+const botToken = process.env.DISCORD_BOT_TOKEN; // Substitua pelo nome da variável do token do bot do Discord no .env
+
+// ...
+
 
 // Configuração da sessão
 app.use(session({
