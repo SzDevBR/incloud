@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Painel de Controle - Hospedagem de Aplicativos</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1>Bem-vindo(a) <%= user %>!</h1>
+  <p>Este é o painel de controle do usuário.</p>
+  <% if (applications.length > 0) { %>
+    <h2>Aplicações:</h2>
+    <ul>
+      <% applications.forEach(app => { %>
+        <li><%= app.name %> - Status: <%= app.status %></li>
+      <% }); %>
+    </ul>
+  <% } else { %>
+    <p>Nenhuma aplicação encontrada.</p>
+  <% } %>
+  <p><a href="/upload">Enviar Nova Aplicação</a></p>
+  <p><a href="/logout">Sair</a></p>
+  <form action="/ban" method="post">
+    <label for="userIdToBan">ID do usuário para banir:</label>
+    <input type="text" id="userIdToBan" name="userIdToBan" required>
+    <input type="submit" value="Banir Usuário">
+  </form>
+</body>
+</html>
