@@ -19,20 +19,32 @@ app.set('views', path.join(__dirname, 'views'));
 // Exemplo de renderização da página "dashboard.ejs"
 app.get('/dashboard', (req, res) => {
   const user = req.user;
-  // Outras lógicas para obter os dados da aplicação do usuário
-  res.render('dashboard', { user: user });
+  // Acesso às informações do usuário
+  const avatarUrl = user.avatar; // URL do avatar (foto) do usuário
+  const username = user.username; // Nome de usuário do usuário
+  const discriminator = user.discriminator; // Discriminador do usuário (os quatro dígitos após o nome de usuário, por exemplo, #1234)
+
+  res.render('dashboard', { user: user, avatarUrl: avatarUrl, username: username, discriminator: discriminator });
 });
 
 app.get('/upload', (req, res) => {
   const user = req.user;
-  // Outras lógicas para obter os dados da aplicação do usuário
-  res.render('upload', { user: user });
+  // Acesso às informações do usuário
+  const avatarUrl = user.avatar; // URL do avatar (foto) do usuário
+  const username = user.username; // Nome de usuário do usuário
+  const discriminator = user.discriminator; // Discriminador do usuário (os quatro dígitos após o nome de usuário, por exemplo, #1234)
+
+  res.render('upload', { user: user, avatarUrl: avatarUrl, username: username, discriminator: discriminator });
 });
 
 app.get('/app-details', (req, res) => {
   const user = req.user;
-  // Outras lógicas para obter os dados da aplicação do usuário
-  res.render('app-details', { user: user });
+ // Acesso às informações do usuário
+  const avatarUrl = user.avatar; // URL do avatar (foto) do usuário
+  const username = user.username; // Nome de usuário do usuário
+  const discriminator = user.discriminator; // Discriminador do usuário (os quatro dígitos após o nome de usuário, por exemplo, #1234)
+
+  res.render('app-details', { user: user, avatarUrl: avatarUrl, username: username, discriminator: discriminator });
 });
 
 
