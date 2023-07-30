@@ -18,8 +18,8 @@
       <% if (user) { %>
         <!-- Foto e nome do usuário com botão de deslogar -->
         <div class="user-info">
-          <img src="<%= user.avatar %>" alt="Foto do Usuário">
-          <p><%= user.username %>#<%= user.discriminator %></p>
+          <img src="<%= avatarUrl %>" alt="Foto do Usuário">
+          <p><%= username %>#<%= discriminator %></p>
         </div>
         <a href="/logout" class="logout-button">Deslogar</a>
       <% } %>
