@@ -49,10 +49,18 @@ passport.use(new DiscordStrategy({
   return done(null, user);
 }));
 
+// Configurar o Firebase
+const serviceAccount = require('./firebase'); // Substitua pelo caminho para o arquivo JSON das credenciais do Firebase
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://inderuxhostdiscord-default-rtdb.firebaseio.com/', // Substitua pela URL do seu projeto Firebase Realtime Database
+});
+const db = admin.database();
+
 // Função para verificar se o usuário é um administrador (altere essa função conforme sua lógica de administração)
 function isAdmin(user) {
   // Exemplo: Verifica se o usuário tem permissão de administrador no Discord
-  return user.id === 'SEU_ID_DE_ADMINISTRADOR';
+  return user.id === '811756391726710815';
 }
 
 // Função de autenticação personalizada para verificar se o usuário está logado
@@ -65,7 +73,7 @@ function authenticate(req, res, next) {
 }
 
 // Estrutura de dados para armazenar as aplicações dos usuários
-const userApplications = [];
+const userApplicationsRef = db.ref('userApplications');
 
 // Configuração do multer para lidar com o upload do arquivo
 const storage = multer.diskStorage({
@@ -84,8 +92,18 @@ const upload = multer({ storage: storage });
 // Rota inicial
 app.get('/', authenticate, (req, res) => {
   const user = req.user;
-  const userApp = userApplications.find((app) => app.owner === user.id);
-  res.render('dashboard', { user: user.username, applications: userApp ? userApp.applications : [] });
+
+  // Buscar as aplicações do usuário no Firebase Realtime Database
+  userApplicationsRef.child(user.id).once('value')
+    .then((snapshot) => {
+      const userApps = snapshot.val();
+      const applications = userApps ? Object.values(userApps.applications) : [];
+      res.render('dashboard', { user: user.username, applications });
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar as aplicações do usuário:', error);
+      res.status(500).send('Ocorreu um erro ao buscar as aplicações do usuário.');
+    });
 });
 
 // Rota para fazer login com Discord
@@ -107,34 +125,24 @@ app.post('/upload', (req, res) => {
   const { userId, appId, appName } = req.body;
 
   // Verificar se o usuário é o bot do Discord (substitua 'SEU_BOT_ID' pelo ID do seu bot)
-  if (userId !== 'SEU_BOT_ID') {
+  if (userId !== '1135054553306365962') {
     return res.status(403).send('Apenas o bot do Discord pode enviar novas aplicações.');
   }
 
-  // Exemplo: Salvando a nova aplicação no usuário
-  const userApp = userApplications.find((app) => app.owner === userId);
-  if (userApp) {
-    userApp.applications.push({
-      id: appId, // O ID é fornecido pelo bot do Discord
-      name: appName,
-      status: 'stopped',
-      terminal: '',
-    });
-  } else {
-    userApplications.push({
-      owner: userId,
-      applications: [
-        {
-          id: appId, // O ID é fornecido pelo bot do Discord
-          name: appName,
-          status: 'stopped',
-          terminal: '',
-        },
-      ],
-    });
-  }
-
-  res.send('Aplicação enviada com sucesso!');
+  // Exemplo: Salvando a nova aplicação no Firebase Realtime Database
+  userApplicationsRef.child(userId).child('applications').child(appId).set({
+    id: appId, // O ID é fornecido pelo bot do Discord
+    name: appName,
+    status: 'stopped',
+    terminal: '',
+  })
+  .then(() => {
+    res.send('Aplicação enviada com sucesso!');
+  })
+  .catch((error) => {
+    console.error('Erro ao enviar a aplicação:', error);
+    res.status(500).send('Ocorreu um erro ao enviar a aplicação.');
+  });
 });
 
 // Rota para visualizar detalhes da aplicação
@@ -142,54 +150,54 @@ app.get('/app/:appId', authenticate, (req, res) => {
   const user = req.user;
   const appId = req.params.appId;
 
-  // Verificar se o usuário é o proprietário da aplicação com base no ID da aplicação
-  const application = findApplicationById(user.id, appId);
+  // Verificar se o usuário é o proprietário da aplicação pelo ID da aplicação
+  userApplicationsRef.child(user.id).child('applications').child(appId).once('value')
+    .then((snapshot) => {
+      const application = snapshot.val();
+      if (!application) {
+        return res.status(403).send('Você não tem permissão para visualizar os detalhes desta aplicação.');
+      }
 
-  if (!application) {
-    return res.status(403).send('Você não tem permissão para visualizar os detalhes desta aplicação.');
-  }
+      // Aqui você pode adicionar lógica para obter mais informações sobre a aplicação,
+      // como o terminal ou outras configurações específicas da aplicação.
 
-  // Aqui você pode adicionar lógica para obter mais informações sobre a aplicação,
-  // como o terminal ou outras configurações específicas da aplicação.
+      // Para este exemplo, estou apenas enviando informações mínimas para a página.
+      const appData = {
+        appName: application.name,
+        appStatus: application.status,
+        appTerminal: 'Terminal da aplicação.\nLogs e comandos interativos serão exibidos aqui.',
+        appId: application.id,
+        isAdmin: isAdmin(user),
+      };
 
-  // Para este exemplo, estou apenas enviando informações mínimas para a página.
-  const appData = {
-    appName: application.name,
-    appStatus: application.status,
-    appTerminal: 'Terminal da aplicação.\nLogs e comandos interativos serão exibidos aqui.',
-    appId: application.id,
-    isAdmin: isAdmin(user),
-  };
-
-  res.render('app-details', appData);
+      res.render('app-details', appData);
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar a aplicação:', error);
+      res.status(500).send('Ocorreu um erro ao buscar a aplicação.');
+    });
 });
 
 
 // Rota para remover a aplicação
-
 app.post('/remove', authenticate, (req, res) => {
   const user = req.user;
   const { userId, appId } = req.body;
 
   // Verificar se o usuário é o bot do Discord (substitua 'SEU_BOT_ID' pelo ID do seu bot)
-  if (userId !== 'SEU_BOT_ID') {
+  if (userId !== '1135054553306365962') {
     return res.status(403).send('Apenas o bot do Discord pode remover aplicações.');
   }
 
   // Encontre a aplicação do usuário pelo ID
-  const application = findApplicationById(userId, appId);
-
-  if (!application) {
-    return res.status(404).send('Aplicação não encontrada.');
-  }
-
-  // Remova a aplicação
-  const userApp = userApplications.find((app) => app.owner === userId);
-  if (userApp) {
-    userApp.applications = userApp.applications.filter((app) => app.id !== appId);
-  }
-
-  res.send('Aplicação removida com sucesso!');
+  userApplicationsRef.child(userId).child('applications').child(appId).remove()
+    .then(() => {
+      res.send('Aplicação removida com sucesso!');
+    })
+    .catch((error) => {
+      console.error('Erro ao remover a aplicação:', error);
+      res.status(500).send('Ocorreu um erro ao remover a aplicação.');
+    });
 });
 
 // Função para encontrar a aplicação pelo ID da aplicação e ID do usuário
@@ -204,7 +212,7 @@ app.post('/action', authenticate, (req, res) => {
   const { appId, action } = req.body;
 
   // Verificar se o usuário é o bot do Discord (substitua 'SEU_BOT_ID' pelo ID do seu bot)
-  if (user.id === 'SEU_BOT_ID') {
+  if (user.id === '1135054553306365962') {
     // Encontre a aplicação do usuário pelo ID
     const application = findApplicationById(user.id, appId);
 
