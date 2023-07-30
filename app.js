@@ -18,13 +18,17 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Exemplo de renderização da página "dashboard.ejs"
 app.get('/dashboard', (req, res) => {
-  const user = req.user;
+  const user = req.user; // Assume que o objeto do usuário foi corretamente armazenado na variável 'user'
+
   // Acesso às informações do usuário
   const avatarUrl = user.avatar; // URL do avatar (foto) do usuário
   const username = user.username; // Nome de usuário do usuário
   const discriminator = user.discriminator; // Discriminador do usuário (os quatro dígitos após o nome de usuário, por exemplo, #1234)
 
-  res.render('dashboard', { user: user, avatarUrl: avatarUrl, username: username, discriminator: discriminator });
+  // Outras lógicas para obter os dados da aplicação do usuário
+
+  // Aqui você deve passar as informações para a view "dashboard"
+  res.render('dashboard', { avatar: avatarUrl, username: username, discriminator: discriminator });
 });
 
 app.get('/upload', (req, res) => {
