@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const path = require('path');
 const admin = require('firebase-admin');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -21,10 +22,21 @@ const botToken = process.env.DISCORD_BOT_TOKEN; // Substitua pelo nome da variá
 
 // ...
 
+// Gere uma chave secreta aleatória com 64 caracteres (ou qualquer tamanho desejado)
+const generateRandomKey = (length) => {
+  return crypto.randomBytes(Math.ceil(length / 2))
+    .toString('hex')
+    .slice(0, length);
+};
+
+// Use a chave secreta gerada como segredo para a sessão
+const secretKey = generateRandomKey(64); // Gera uma chave secreta de 64 caracteres
+console.log('Chave secreta da sessão:', secretKey); // Exibe a chave no console (certifique-se de copiar e armazenar essa chave em local seguro)
+
 
 // Configuração da sessão
 app.use(session({
-  secret: 'seu_secret_sessao',
+  secret: secretKey,
   resave: false,
   saveUninitialized: false,
 }));
@@ -49,6 +61,7 @@ passport.use(new DiscordStrategy({
   };
   return done(null, user);
 }));
+
 
 // Configurar o Firebase
 const serviceAccount = require('./firebase'); // Substitua pelo caminho para o arquivo JSON das credenciais do Firebase
