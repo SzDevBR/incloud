@@ -28,7 +28,7 @@ app.get('/dashboard', (req, res) => {
   // Outras lógicas para obter os dados da aplicação do usuário
 
   // Aqui você deve passar as informações para a view "dashboard"
-  res.render('dashboard', { avatar: avatarUrl, username: username, discriminator: discriminator });
+res.render('dashboard', { user: user, avatar: avatarUrl, username: username, discriminator: discriminator });
 });
 app.get('/upload', (req, res) => {
   const user = req.user;
