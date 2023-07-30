@@ -30,7 +30,6 @@ app.get('/dashboard', (req, res) => {
   // Aqui você deve passar as informações para a view "dashboard"
   res.render('dashboard', { avatar: avatarUrl, username: username, discriminator: discriminator });
 });
-
 app.get('/upload', (req, res) => {
   const user = req.user;
   // Acesso às informações do usuário
@@ -183,7 +182,7 @@ app.get('/', authenticate, (req, res) => {
     .then((snapshot) => {
       const userApps = snapshot.val();
       const applications = userApps ? Object.values(userApps.applications) : [];
-      res.render('dashboard', { user: user.username, applications });
+      res.render('', { user: user.username, applications });
     })
     .catch((error) => {
       console.error('Erro ao buscar as aplicações do usuário:', error);
