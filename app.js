@@ -124,7 +124,7 @@ app.get('/', authenticate, (req, res) => {
 app.get('/login', passport.authenticate('discord'));
 
 // Rota de callback após a autenticação do Discord
-app.get('/callback', passport.authenticate('discord', { failureRedirect: '/' }), (req, res) => {
+app.get('/auth/discord/callback', passport.authenticate('discord', { failureRedirect: '/' }), (req, res) => {
   res.redirect('/');
 });
 
