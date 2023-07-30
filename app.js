@@ -53,15 +53,26 @@ passport.use(new DiscordStrategy({
   scope: ['identify'],
 },
 (accessToken, refreshToken, profile, done) => {
-  const user = {
-    id: profile.id,
-    username: profile.username,
-    discriminator: profile.discriminator,
-    avatar: profile.avatar,
-  };
-  return done(null, user);
+  // Fazer uma requisição à API do Discord para obter os dados do usuário
+  fetch('https://discord.com/api/v13/users/@me', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+  .then((response) => response.json())
+  .then((userData) => {
+    const user = {
+      id: userData.id,
+      username: userData.username,
+      discriminator: userData.discriminator,
+      avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
+    };
+    return done(null, user);
+  })
+  .catch((err) => {
+    return done(err, null);
+  });
 }));
-
 
 // Configurar o Firebase
 const serviceAccount = require('./firebase'); // Substitua pelo caminho para o arquivo JSON das credenciais do Firebase
