@@ -56,7 +56,7 @@ passport.use(new DiscordStrategy({
   console.log('accessToken:', accessToken); // Verificar o valor do accessToken no console
 
   // Fazer uma requisição à API do Discord para obter os dados do usuário
-  fetch('https://discord.com/api/v13/users/@me', {
+  fetch('https://discord.com/api/v6/users/@me', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
