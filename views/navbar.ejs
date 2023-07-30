@@ -6,8 +6,8 @@
   <div class="user-profile">
     <% if (user) { %>
       <div class="user-info">
-        <img src="<%= avatar %>" alt="Foto do usuário">
-        <span><%= username %></span>
+        <img src="<%= user.avatar %>" alt="Foto do usuário">
+        <span><%= user.username %></span>
       </div>
       <form action="/logout" method="post">
         <button type="submit">Deslogar</button>
