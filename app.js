@@ -157,6 +157,34 @@ app.get('/app/:appId', authenticate, (req, res) => {
   res.render('app-details', appData);
 });
 
+
+// Rota para remover a aplicação
+
+app.post('/remove', authenticate, (req, res) => {
+  const user = req.user;
+  const { userId, appId } = req.body;
+
+  // Verificar se o usuário é o bot do Discord (substitua 'SEU_BOT_ID' pelo ID do seu bot)
+  if (userId !== 'SEU_BOT_ID') {
+    return res.status(403).send('Apenas o bot do Discord pode remover aplicações.');
+  }
+
+  // Encontre a aplicação do usuário pelo ID
+  const application = findApplicationById(userId, appId);
+
+  if (!application) {
+    return res.status(404).send('Aplicação não encontrada.');
+  }
+
+  // Remova a aplicação
+  const userApp = userApplications.find((app) => app.owner === userId);
+  if (userApp) {
+    userApp.applications = userApp.applications.filter((app) => app.id !== appId);
+  }
+
+  res.send('Aplicação removida com sucesso!');
+});
+
 // Função para encontrar a aplicação pelo ID da aplicação e ID do usuário
 function findApplicationById(userId, appId) {
   const userApp = userApplications.find((app) => app.owner === userId);
