@@ -1,3 +1,4 @@
+<!-- /views/dashboard.ejs -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,24 +6,39 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <header>
+    <div class="navbar-left">
+      <!-- Logo centralizado -->
+      <div class="logo-container">
+        <img src="/logo.png" alt="Logo">
+      </div>
+    </div>
+    <div class="navbar-right">
+      <% if (user) { %>
+        <!-- Foto e nome do usuário com botão de deslogar -->
+        <div class="user-info">
+          <img src="<%= user.avatar %>" alt="Foto do Usuário">
+          <p><%= user.username %>#<%= user.discriminator %></p>
+        </div>
+        <a href="/logout" class="logout-button">Deslogar</a>
+      <% } %>
+    </div>
+  </header>
   <h1>Bem-vindo(a) <%= user %>!</h1>
   <p>Este é o painel de controle do usuário.</p>
   <% if (applications.length > 0) { %>
-    <h2>Aplicações:</h2>
-    <ul>
-      <% applications.forEach(app => { %>
-        <li><%= app.name %> - Status: <%= app.status %></li>
-      <% }); %>
-    </ul>
+    <% applications.forEach(app => { %>
+      <div class="app-card">
+        <h2><%= app.name %></h2>
+        <p>Status: <%= app.status %></p>
+        <a href="/app/<%= app.id %>">Ver Mais</a>
+      </div>
+    <% }); %>
   <% } else { %>
     <p>Nenhuma aplicação encontrada.</p>
   <% } %>
   <p><a href="/upload">Enviar Nova Aplicação</a></p>
   <p><a href="/logout">Sair</a></p>
-  <form action="/ban" method="post">
-    <label for="userIdToBan">ID do usuário para banir:</label>
-    <input type="text" id="userIdToBan" name="userIdToBan" required>
-    <input type="submit" value="Banir Usuário">
-  </form>
 </body>
 </html>
+
