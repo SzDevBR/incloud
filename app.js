@@ -16,6 +16,13 @@ app.set('view engine', 'ejs');
 // Definir a pasta de visualizações
 app.set('views', path.join(__dirname, 'views'));
 
+// Exemplo de renderização da página "dashboard.ejs"
+app.get('/dashboard', (req, res) => {
+  const user = req.user;
+  // Outras lógicas para obter os dados da aplicação do usuário
+  res.render('dashboard', { user: user });
+});
+
 require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
 
 // ...
