@@ -53,6 +53,8 @@ passport.use(new DiscordStrategy({
   scope: ['identify'],
 },
 (accessToken, refreshToken, profile, done) => {
+  console.log('accessToken:', accessToken); // Verificar o valor do accessToken no console
+
   // Fazer uma requisição à API do Discord para obter os dados do usuário
   fetch('https://discord.com/api/v13/users/@me', {
     headers: {
@@ -61,6 +63,8 @@ passport.use(new DiscordStrategy({
   })
   .then((response) => response.json())
   .then((userData) => {
+    console.log('userData:', userData); // Verificar os dados retornados pela API do Discord
+
     const user = {
       id: userData.id,
       username: userData.username,
@@ -70,9 +74,11 @@ passport.use(new DiscordStrategy({
     return done(null, user);
   })
   .catch((err) => {
+    console.error('Erro na requisição ao Discord:', err); // Verificar erros na requisição
     return done(err, null);
   });
 }));
+
 
 // Configurar o Firebase
 const serviceAccount = require('./firebase'); // Substitua pelo caminho para o arquivo JSON das credenciais do Firebase
