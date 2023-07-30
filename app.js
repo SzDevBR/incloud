@@ -8,8 +8,13 @@ const multer = require('multer');
 const path = require('path');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
-
 const app = express();
+
+// Definir a engine de visualização
+app.set('view engine', 'ejs');
+
+// Definir a pasta de visualizações
+app.set('views', path.join(__dirname, 'views'));
 
 require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
 
