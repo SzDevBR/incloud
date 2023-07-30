@@ -23,6 +23,19 @@ app.get('/dashboard', (req, res) => {
   res.render('dashboard', { user: user });
 });
 
+app.get('/upload', (req, res) => {
+  const user = req.user;
+  // Outras lógicas para obter os dados da aplicação do usuário
+  res.render('upload', { user: user });
+});
+
+app.get('/app-details', (req, res) => {
+  const user = req.user;
+  // Outras lógicas para obter os dados da aplicação do usuário
+  res.render('app-details', { user: user });
+});
+
+
 require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
 
 // ...
