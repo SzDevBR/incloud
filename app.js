@@ -79,6 +79,19 @@ passport.use(new DiscordStrategy({
   });
 }));
 
+// Função para serializar o usuário
+passport.serializeUser((user, done) => {
+  done(null, user); // Neste exemplo, estamos serializando o objeto de usuário completo, mas você pode serializar apenas o ID se preferir.
+});
+
+// Função para deserializar o usuário
+passport.deserializeUser((user, done) => {
+  done(null, user); // Neste exemplo, não estamos fazendo nada na deserialização, mas aqui você pode carregar informações adicionais do usuário se necessário.
+});
+
+// Resto do código do app.js
+
+
 
 // Configurar o Firebase
 const serviceAccount = require('./firebase'); // Substitua pelo caminho para o arquivo JSON das credenciais do Firebase
